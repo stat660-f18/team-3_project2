@@ -248,8 +248,9 @@ data happy_raw_with_yoy_change;
         country 
         year 
         happiness_rank 
-        happiness_rank_yoy 
-        happiness_score         happiness_score_yoy
+        happiness_rank_yoy
+        happiness_score 
+        happiness_score_yoy
         life_expectancy 
         gdp
         hr 
