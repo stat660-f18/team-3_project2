@@ -31,7 +31,7 @@ X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPA
 *******************************************************************************;
 
 title1
-'Research Question:  What are the top five countries that experienced the biggest decrease in “Happiness Score” between 2015 and 2016?'
+'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in “Happiness Score” between 2015 and 2016?'
 ;
 
 title2
@@ -70,17 +70,53 @@ Follow-up Steps: More carefully clean values in order to filter out any possible
 illegal values, and better handle missing data, e.g., by using a previous 
 year's data or a rolling average of previous years' data as a proxy.
 ;
-proc sort data = cotw_2016_analytic_file nodupkey; by descending happiness_score_yoy; run;
-proc print
-        data=cotw_2016_analytic_file (obs=5)
+proc sort data = cotw_2016_analytic_file nodupkey; by descending population_mm; run;
+data _temp;
+	set 
+        cotw_2016_analytic_file 
     ;
-    id
-        country
+	if _n_<=20
     ;
-    var
-        population_mm happiness_score_yoy
-    ;
+	contr = put(_n_,z2.)||"_"||country ;
 run;
+ 
+proc sort data = _temp nodupkey; by happiness_score_yoy; run;
+proc print 
+        noobs
+        data=_temp (obs=5) label
+    ;
+    id 
+        Country
+    ;
+    var 
+        population_mm
+        happiness_score_yoy 
+    ;
+	format 
+        population_mm comma12.0
+        happiness_score_yoy percent15.1
+	;
+
+run;
+
+* Specify axis characteristics ;                                                                                                           
+axis1 label=('Largest Countries')
+;
+axis2 label=('Happiness Score YOY %')
+;   
+* Add a title to the graph ;                                                                                                       
+title1 'Happiness Score YOY %';  
+footnote; 
+
+proc gchart data = _temp  ;
+   hbar contr  / 
+        maxis=axis1 
+        raxis=axis2 
+        nostats  
+        sumvar=happiness_score_yoy  
+   ;
+run;                                                                                                                                    
+quit;  
 
 title;
 footnote;
