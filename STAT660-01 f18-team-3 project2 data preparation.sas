@@ -445,14 +445,14 @@ data cotw_2016_analytic_file;
         biocapacity_deficit_or_reserve
     ;
 	
-	label 
-	    country            = "Country"
+    label 
+        country            = "Country"
         year               = "Year"
         population_mm      = "Population (MM)"
         happiness_rank     = "Happiness Rank"
         happiness_rank_yoy = "Happiness Rank YOY Change"
         happiness_score    = "Happiness Score"
-	    happiness_score_yoy= "Happiness Score YOY %"
+        happiness_score_yoy= "Happiness Score YOY %"
         life_expectancy    = "Life Expectancy Rate"
         gdp                = "Gross Domestic Product (GDP)"
         gpi                = "Global Peace Index"
@@ -463,8 +463,8 @@ data cotw_2016_analytic_file;
 
     merge 
         happy_raw_with_yoy_change_sorted  (in=a)
-	    gpi_2016_sorted  (in=b)
-	    eco_2016_sorted  (in=c)
+        gpi_2016_sorted  (in=b)
+        eco_2016_sorted  (in=c)
     ;
 	by 
         country 

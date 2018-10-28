@@ -238,7 +238,7 @@ proc corr
     ;
     var 
         hdi
-		life_expectancy
+        ife_expectancy
     ;
 run;
 title;
