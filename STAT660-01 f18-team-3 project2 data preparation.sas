@@ -474,8 +474,3 @@ data cotw_2016_analytic_file;
     ;
 run;
 
-proc datasets lib=work;
-    save 
-        cotw_2016_analytic_file / memtype=data
-    ;
-run;
