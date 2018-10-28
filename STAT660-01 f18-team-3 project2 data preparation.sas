@@ -119,6 +119,21 @@ proc format;
     ; 
 run;
 
+proc format;
+    value gpi_bins
+        low   -1.72 ="Q1 GPI"
+        1.72<-2.02 ="Q2 GPI"
+        2.02<-2.28 ="Q3 GPI"
+        2.28<-high  ="Q4 GPI"
+    ;
+    value happiness_score_bins
+        low   --4.4="Q1 Happiness Score"
+        4.4<- 5.3  ="Q2 Happiness Score"
+        5.3<- 6.3  ="Q3 Happiness Score"
+        6.3<- high ="Q4 Happiness Score"
+    ; 
+run;
+
 * setup environmental parameters;
 %let inputDataset1URL =
     https://github.com/stat660/team-3_project2/blob/v0.1/data/happy_2015.csv?raw=true
@@ -473,4 +488,18 @@ data cotw_2016_analytic_file;
     if a & b & c
     ;
 run;
+
+
+* use proc sort to sort the analytic data file, making a new file named cotw_2016_analytic_file_sort_hr by descending happiness_rank_yoy;
+
+proc sort 
+    data=cotw_2016_analytic_file
+    out=cotw_2016_analytic_file_sort_hr
+    ;
+    by descending happiness_rank_yoy
+    ;
+run;
+
+
+
 
