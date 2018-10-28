@@ -105,25 +105,33 @@ standardized hectares with world average productivity.
 
 * Create format output;
 proc format;
-/*
-    value deathrate_bins
-        low   -05.85 ="Q1 Death Rate"
-        05.85<-07.84 ="Q2 Death Rate"
-        07.84<-10.62 ="Q3 Death Rate"
-        10.62<-high  ="Q4 Death Rate"
+    value gpi_yoy_bins
+        low   -0.012 ="Q1 GPI YOY %"
+        0.012<-0.032 ="Q2 GPI YOY %"
+        0.032<-0.070 ="Q3 GPI YOY %"
+        0.070<-high  ="Q4 GPI YOY %"
     ;
-    value Net_Migration_bins
-        low   --0.95 ="Q1 Net Migration"
-        -0.95<- 0    ="Q2 Net Migration"
-         0   <- 1.01 ="Q3 Net Migration"
-         1.01<- high ="Q4 Net Migration"
+    value happiness_score_yoy_bins
+        low   --0.014="Q1 Happiness Score %"
+       -0.014<- 0.000="Q2 Happiness Score %"
+        0.000<- 0.021="Q3 Happiness Score %"
+        0.021<- high ="Q4 Happiness Score %"
+    ; 
+run;
+
+proc format;
+    value gpi_bins
+        low   -1.72 ="Q1 GPI"
+        1.72<-2.02 ="Q2 GPI"
+        2.02<-2.28 ="Q3 GPI"
+        2.28<-high  ="Q4 GPI"
     ;
-    value Literacy_bin
-        1-<50   = "Under 50% Literacy"
-        50-99.9 = "Over 50% Literacy"
-        100     = "100% Literacy"
-    ;
-*/
+    value happiness_score_bins
+        low   --4.4="Q1 Happiness Score"
+        4.4<- 5.3  ="Q2 Happiness Score"
+        5.3<- 6.3  ="Q3 Happiness Score"
+        6.3<- high ="Q4 Happiness Score"
+    ; 
 run;
 
 * setup environmental parameters;
@@ -248,8 +256,9 @@ data happy_raw_with_yoy_change;
         country 
         year 
         happiness_rank 
-        happiness_rank_yoy 
-        happiness_score         happiness_score_yoy
+        happiness_rank_yoy
+        happiness_score 
+        happiness_score_yoy
         life_expectancy 
         gdp
         hr 
@@ -291,16 +300,16 @@ run;
 
 
 *******************************************************************************;
-* Add Year column to eco_2016 and keep countries on happy			   ;
+* Add Year column to eco_2016 and keep countries on happy			           ;
 *******************************************************************************;
 
 data eco_2016;
 	set eco_2016;
 	if country = 'Congo, Democratic Republ' then country = 'Congo (Kinshasa)';
-	if country = 'Congo'			then country = 'Congo (Brazzaville)';
+	if country = 'Congo'                    then country = 'Congo (Brazzaville)';
 	if country = 'Iran, Islamic Republic o' then country = 'Iran';
 	if country = "Lao People's Democratic"  then country = 'Laos';
-	if country = 'Macedonia TFYR' 		then country = 'Macedonia';
+	if country = 'Macedonia TFYR'           then country = 'Macedonia';
 	if country = 'Korea, Republic of'       then country = 'South Korea';
 	if country = 'Korea, Democratic People' then country = 'North Korea';
 	if country = 'Syrian Arab Republic'     then country = 'Syria';
@@ -315,43 +324,47 @@ proc sort data = eco_2016 nodupkey;
 run;
 
 data eco_2016;
-    length country $24.;
+    length 
+        country $24.
+    ;
     merge 
         happy_raw_with_yoy_change (in = a keep = country year where=(year=2016))
-        eco_2016 ( in = b)
+        eco_2016 ( in = b rename = (population__millions_=population_mm))
     ;
     by 
         country
     ; 
-    if a and b
+    if 
+        a and b
     ;
 	
 run;
 
 
 *******************************************************************************;
-* Transpose data and keep 2016 year                                   ;
+* Transpose data and keep 2016 year                                            ;
 *******************************************************************************;
 proc sort data = gpi_raw nodupkey; by country; run;
 
-proc transpose data=gpi_raw out=gpi_2016 prefix=gpi ;
-    by  
-        country
-    ;  
-    var 
-        score_2016
+data gpi_raw;
+    set
+        gpi_raw
+    ;
+    gpi_yoy = score_2016/score_2015 - 1
     ;
 run;
 
 data gpi_2016;
     set 
-        gpi_2016
+        gpi_raw (keep = country score_2016 gpi_yoy rename=(score_2016=gpi))
     ;
     if country = 'Palestine' 
         then country = 'Palestinian Territories'
     ;
     if country = 'Republic of the Congo' 
         then country = 'Congo (Kinshasa)'
+    ;
+    year = 2016
     ;
 run;
 
@@ -369,7 +382,7 @@ data gpi_2016;
     ;
     merge 
         happy_raw_with_yoy_change (in = a keep = country year where=(year=2016))
-        gpi_2016 (in = b rename=gpi1=gpi)
+        gpi_2016 (in = b )
     ;
     by 
         country
@@ -419,43 +432,54 @@ data cotw_2016_analytic_file;
     retain
         country 
         year 
+        population_mm
         happiness_rank 
         happiness_rank_yoy 
         happiness_score 
         happiness_score_yoy 
         life_expectancy 
         gdp
-        family
-        freedom
-        generosity
         gpi
-        hdi
-        carbon_footprint
-        total_ecological_footprint
+        gpi_yoy
+        hdi 
         biocapacity_deficit_or_reserve
     ;
     keep
         country 
         year 
+        population_mm
         happiness_rank 
         happiness_rank_yoy 
         happiness_score 
         happiness_score_yoy 
         life_expectancy 
         gdp
-        family
-        freedom
-        generosity
         gpi
-        hdi
-        carbon_footprint
-        total_ecological_footprint
+        gpi_yoy
+        hdi 
         biocapacity_deficit_or_reserve
     ;
+	
+    label 
+        country            = "Country"
+        year               = "Year"
+        population_mm      = "Population (MM)"
+        happiness_rank     = "Happiness Rank"
+        happiness_rank_yoy = "Happiness Rank YOY Change"
+        happiness_score    = "Happiness Score"
+        happiness_score_yoy= "Happiness Score YOY %"
+        life_expectancy    = "Life Expectancy Rate"
+        gdp                = "Gross Domestic Product (GDP)"
+        gpi                = "Global Peace Index"
+        gpi_yoy            = "Gloabl Peace Index YOY %"
+        hdi                = "Human Development Index"
+        biocapacity_deficit_or_reserve = "Biocapacity Deficit/Reserve"
+    ;
+
     merge 
         happy_raw_with_yoy_change_sorted  (in=a)
-	gpi_2016_sorted  	  (in=b)
-	eco_2016_sorted		  (in=c)
+        gpi_2016_sorted  (in=b)
+        eco_2016_sorted  (in=c)
     ;
 	by 
         country 
@@ -464,4 +488,18 @@ data cotw_2016_analytic_file;
     if a & b & c
     ;
 run;
+
+
+* use proc sort to sort the analytic data file, making a new file named cotw_2016_analytic_file_sort_hr by descending happiness_rank_yoy;
+
+proc sort 
+    data=cotw_2016_analytic_file
+    out=cotw_2016_analytic_file_sort_hr
+    ;
+    by descending happiness_rank_yoy
+    ;
+run;
+
+
+
 
