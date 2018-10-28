@@ -105,25 +105,18 @@ standardized hectares with world average productivity.
 
 * Create format output;
 proc format;
-/*
-    value deathrate_bins
-        low   -05.85 ="Q1 Death Rate"
-        05.85<-07.84 ="Q2 Death Rate"
-        07.84<-10.62 ="Q3 Death Rate"
-        10.62<-high  ="Q4 Death Rate"
+    value gpi_yoy_bins
+        low   -0.012 ="Q1 GPI YOY %"
+        0.012<-0.032 ="Q2 GPI YOY %"
+        0.032<-0.070 ="Q3 GPI YOY %"
+        0.070<-high  ="Q4 GPI YOY %"
     ;
-    value Net_Migration_bins
-        low   --0.95 ="Q1 Net Migration"
-        -0.95<- 0    ="Q2 Net Migration"
-         0   <- 1.01 ="Q3 Net Migration"
-         1.01<- high ="Q4 Net Migration"
-    ;
-    value Literacy_bin
-        1-<50   = "Under 50% Literacy"
-        50-99.9 = "Over 50% Literacy"
-        100     = "100% Literacy"
-    ;
-*/
+    value happiness_score_yoy_bins
+        low   --0.014="Q1 Happiness Score %"
+       -0.014<- 0.000="Q2 Happiness Score %"
+        0.000<- 0.021="Q3 Happiness Score %"
+        0.021<- high ="Q4 Happiness Score %"
+    ; 
 run;
 
 * setup environmental parameters;
@@ -321,7 +314,7 @@ data eco_2016;
     ;
     merge 
         happy_raw_with_yoy_change (in = a keep = country year where=(year=2016))
-        eco_2016 ( in = b)
+        eco_2016 ( in = b rename = (population__millions_=population_mm))
     ;
     by 
         country
@@ -424,6 +417,7 @@ data cotw_2016_analytic_file;
     retain
         country 
         year 
+        population_mm
         happiness_rank 
         happiness_rank_yoy 
         happiness_score 
@@ -438,6 +432,7 @@ data cotw_2016_analytic_file;
     keep
         country 
         year 
+        population_mm
         happiness_rank 
         happiness_rank_yoy 
         happiness_score 
@@ -451,8 +446,8 @@ data cotw_2016_analytic_file;
     ;
     merge 
         happy_raw_with_yoy_change_sorted  (in=a)
-	    gpi_2016_sorted  	  (in=b)
-	    eco_2016_sorted	  (in=c)
+	    gpi_2016_sorted  (in=b)
+	    eco_2016_sorted  (in=c)
     ;
 	by 
         country 
