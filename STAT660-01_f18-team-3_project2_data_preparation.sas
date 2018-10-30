@@ -184,9 +184,9 @@ run;
   in order to merge the other two datasets ;
 *******************************************************************************;
             data &dsn;
-			    set 
+                set 
                     &dsn
-				;
+		;
                 if country = 'Palestinian Territorie'   
                     then country = 'Palestinian Territories';
                 if country = 'Somaliland region'        
@@ -287,7 +287,9 @@ proc sql;
             from
                 happy_2015
         )
-	order by country, year  
+	order by 
+	    country
+	    ,year  
     ;
 quit; 
  
@@ -323,15 +325,15 @@ data happy_raw_with_yoy_change;
     then
         do;
             hr = happiness_rank ;
-	        hs = happiness_score;
+	    hs = happiness_score;
         end;
     else 
         do;			
             happiness_rank_yoy =  hr - happiness_rank;
             happiness_score_yoy= (happiness_score /hs)-1;
             hr = happiness_rank ;
-	        hs = happiness_score;
-	        format 
+	    hs = happiness_score;
+	    format 
                 happiness_score_yoy percent15.2
             ;
             if 
@@ -440,7 +442,7 @@ data cotw_2016_analytic_file;
         gpi_2016  (in=b)
         eco_2016  (in=c)
     ;
-	by 
+    by 
         country 
         year 
     ;
