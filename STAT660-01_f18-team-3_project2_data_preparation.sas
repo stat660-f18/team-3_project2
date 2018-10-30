@@ -267,7 +267,7 @@ run;
   
 
 *******************************************************************************;
-* Combining Vertical Happy_2016 and Happy_2015	dataset 					   ;
+* Combining Vertical Happy_2016 and Happy_2015	dataset 		       ;
 *******************************************************************************;
 
 proc sql;
@@ -347,7 +347,7 @@ run;
 
 
 *******************************************************************************;
-* Add Year column to eco_2016 and keep countries on happy			           ;
+* Add Year column to eco_2016  ;
 *******************************************************************************;
 data eco_2016;
     length 
@@ -386,8 +386,8 @@ run;
 * Build analytic dataset with the least number of columns and
   minimal cleaning/transformation needed to address research questions in
   corresponding data-analysis files ;
+* Data limitation only retain countries listed in all three files;
 *******************************************************************************;
-/*Data limitation all countries listed in all three files*/
 
 data cotw_2016_analytic_file;
     retain
