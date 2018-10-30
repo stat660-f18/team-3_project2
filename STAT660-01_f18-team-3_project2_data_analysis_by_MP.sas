@@ -31,7 +31,7 @@ X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPA
 *******************************************************************************;
 
 title1
-'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in “Happiness Score” between 2015 and 2016?'
+'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in â€œHappiness Scoreâ€ between 2015 and 2016?'
 ;
 
 title2
@@ -52,7 +52,7 @@ footnote3
 ;
 *******************************************************************************;
 *
-Note: This compares the column “Happiness Score” from happy_2015 to the 
+Note: This compares the column â€œHappiness Scoreâ€ from happy_2015 to the 
 column of the same name from happy_2016.
 
 Methodology: When combining happy_2016 with happy_2015 during data 
@@ -147,7 +147,7 @@ footnote3
 
 *
 Note: This compares the change in GPI between 2015 and 2016 in gpi_raw 
-dataset to the column “Happiness Score” in happy_2016 dataset.
+dataset to the column â€œHappiness Scoreâ€ in happy_2016 dataset.
 
 Methodology: Use proc means to compute 5-number summaries of "GPI YOY"
 and "Happiness Score YOY."  Then use proc format to create formats that 
@@ -213,7 +213,7 @@ footnote3
 ;
 
 *
-Note: This compares the column “HDI” from eco_2016 to the column "Life Expectancy" 
+Note: This compares the column â€œHDIâ€ from eco_2016 to the column "Life Expectancy" 
 in happy_2016.
     
 *
