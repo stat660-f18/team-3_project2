@@ -106,10 +106,10 @@ standardized hectares with world average productivity.
 * Create format output;
 proc format;
     value gpi_bins
-        low   -1.72 ="Q1 GPI"
+        low  -1.72 ="Q1 GPI"
         1.72<-2.02 ="Q2 GPI"
         2.02<-2.28 ="Q3 GPI"
-        2.28<-high  ="Q4 GPI"
+        2.28<-high ="Q4 GPI"
     ;
     value gpi_yoy_bins
         low   -0.012 ="Q1 GPI YOY %"
@@ -118,10 +118,10 @@ proc format;
         0.070<-high  ="Q4 GPI YOY %"
     ;
     value happiness_score_bins
-        low   --4.4="Q1 Happiness Score"
-        4.4<- 5.3  ="Q2 Happiness Score"
-        5.3<- 6.3  ="Q3 Happiness Score"
-        6.3<- high ="Q4 Happiness Score"
+        low - 4.4 ="Q1 Happiness Score"
+        4.4<- 5.3 ="Q2 Happiness Score"
+        5.3<- 6.3 ="Q3 Happiness Score"
+        6.3<- high="Q4 Happiness Score"
     ; 
     value happiness_score_yoy_bins
         low   --0.014="Q1 Happiness Score %"
@@ -467,13 +467,26 @@ run;
 * use proc sort to sort the analytic data file, making a new file named 
   cotw_2016_analytic_file_sort_hs by descending happiness_score_yoy;
 *******************************************************************************;
-proc sort 
-    data=cotw_2016_analytic_file
-    out=cotw_2016_analytic_file_sort_hs
-    ;
+proc sort nodupkey 
+    data = cotw_2016_analytic_file 
+    ; 
     by descending 
-       happiness_score_yoy
-    ;
+        population_mm; 
 run;
 
+data cotw_2016_analytic_file_sort_hs;
+	set 
+        cotw_2016_analytic_file
+    ;
+	if _n_<=20
+    ;
+	n_country = put(_n_,z2.)||"_"||country ;
+run;
 
+proc sort nodupkey
+    data = cotw_2016_analytic_file_sort_hs 
+    ; 
+    by 
+        happiness_score_yoy
+    ; 
+run;
