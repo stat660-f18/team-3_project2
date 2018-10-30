@@ -105,12 +105,24 @@ standardized hectares with world average productivity.
 
 * Create format output;
 proc format;
+    value gpi_bins
+        low   -1.72 ="Q1 GPI"
+        1.72<-2.02 ="Q2 GPI"
+        2.02<-2.28 ="Q3 GPI"
+        2.28<-high  ="Q4 GPI"
+    ;
     value gpi_yoy_bins
         low   -0.012 ="Q1 GPI YOY %"
         0.012<-0.032 ="Q2 GPI YOY %"
         0.032<-0.070 ="Q3 GPI YOY %"
         0.070<-high  ="Q4 GPI YOY %"
     ;
+    value happiness_score_bins
+        low   --4.4="Q1 Happiness Score"
+        4.4<- 5.3  ="Q2 Happiness Score"
+        5.3<- 6.3  ="Q3 Happiness Score"
+        6.3<- high ="Q4 Happiness Score"
+    ; 
     value happiness_score_yoy_bins
         low   --0.014="Q1 Happiness Score %"
        -0.014<- 0.000="Q2 Happiness Score %"
@@ -119,39 +131,24 @@ proc format;
     ; 
 run;
 
-proc format;
-    value gpi_bins
-        low   -1.72 ="Q1 GPI"
-        1.72<-2.02 ="Q2 GPI"
-        2.02<-2.28 ="Q3 GPI"
-        2.28<-high  ="Q4 GPI"
-    ;
-    value happiness_score_bins
-        low   --4.4="Q1 Happiness Score"
-        4.4<- 5.3  ="Q2 Happiness Score"
-        5.3<- 6.3  ="Q3 Happiness Score"
-        6.3<- high ="Q4 Happiness Score"
-    ; 
-run;
-
 * setup environmental parameters;
 %let inputDataset1URL =
-    https://github.com/stat660/team-3_project2/blob/v0.1/data/happy_2015.csv?raw=true
+    https://github.com/stat660/team-3_project2/blob/master/data/happy_2015.csv?raw=true
 ;
 %let inputDataset1DSN = happy_2015;
 
 %let inputDataset2URL =
-    https://github.com/stat660/team-3_project2/blob/v0.1/data/happy_2016.csv?raw=true
+    https://github.com/stat660/team-3_project2/blob/master/data/happy_2016.csv?raw=true
 ;
 %let inputDataset2DSN = happy_2016;
 
 %let inputDataset3URL =
-    https://github.com/stat660/team-3_project2/blob/v0.1/data/gpi_2008-2016.csv?raw=true
+    https://github.com/stat660/team-3_project2/blob/master/data/gpi_2008-2016.csv?raw=true
 ;
 %let inputDataset3DSN = gpi_raw;
 
 %let inputDataset4URL =
-    https://github.com/stat660/team-3_project2/blob/v0.1/data/global_eco_2016.csv?raw=true
+    https://github.com/stat660/team-3_project2/blob/master/data/global_eco_2016.csv?raw=true
 ;
 %let inputDataset4DSN = eco_2016;
 
@@ -180,6 +177,63 @@ run;
                 dbms=&filetype.;
             run;
             filename tempfile clear;
+
+*******************************************************************************;
+* Since data are from various sources, the naming convention of country
+  is inconsistent, therefore we use happy dataset country naming convention 
+  in order to merge the other two datasets ;
+*******************************************************************************;
+            data &dsn;
+			    set 
+                    &dsn
+				;
+                if country = 'Palestinian Territorie'   
+                    then country = 'Palestinian Territories';
+                if country = 'Somaliland region'        
+                    then country = 'Somalia'; 
+                if country = 'Taiwan Province of China' 
+                    then country = 'Taiwan';
+                if country = 'Congo, Democratic Republ' 
+                    then country = 'Congo (Kinshasa)';
+                if country = 'Congo'                    
+                    then country = 'Congo (Brazzaville)';
+                if country = 'Iran, Islamic Republic o' 
+                    then country = 'Iran';
+                if country = "Lao People's Democratic"  
+                    then country = 'Laos';
+                if country = 'Macedonia TFYR'           
+                    then country = 'Macedonia';
+                if country = 'Korea, Republic of'       
+                    then country = 'South Korea';
+                if country = 'Korea, Democratic People' 
+                    then country = 'North Korea';
+                if country = 'Syrian Arab Republic'     
+                    then country = 'Syria';
+                if country = 'Tanzania, United Republi' 
+                    then country = 'Tanzania';
+                if country = 'United States of America' 
+                    then country = 'United States';
+                if country = 'Venezuela, Bolivarian Re' 
+                    then country = 'Venezuela';
+                if country = 'Viet Nam' 				
+                    then country = 'Vietnam';	
+                if country = 'Palestine'                
+                    then country = 'Palestinian Territories' ;
+                if country = 'Republic of the Congo'    
+                    then country = 'Congo (Kinshasa)'  ;
+            run;
+
+***************************************************************************;
+* Check raw dataset for duplicates with respect to primary key (country )  ;
+***************************************************************************;
+            proc sort
+                nodupkey
+                data=&dsn
+            ;
+                by 
+                    country 
+                ;
+            run ;
         %end;
     %else
         %do;
@@ -210,10 +264,10 @@ run;
     &inputDataset4URL.,
     &inputDatasetType.
 );
- 
+  
 
 *******************************************************************************;
-* Combining Vertical Data Happy												   ;
+* Combining Vertical Happy_2016 and Happy_2015	dataset 					   ;
 *******************************************************************************;
 
 proc sql;
@@ -237,16 +291,6 @@ proc sql;
     ;
 quit; 
  
-*****************************;
-* Clean country name         ;
-*****************************;
-data happy_raw;
-	set happy_raw;	
-	if country = 'Palestinian Territorie'   then country = 'Palestinian Territories';
-	if country = 'Somaliland region'        then country = 'Somalia'; 
-	if country = 'Taiwan Province of China' then country = 'Taiwan';
-run;
-proc sort data = happy_raw ; by country year ; run;
 
 *******************************************************************************;
 * Compute year-over-year change in Happiness_rank and Happiness_score          ;
@@ -268,25 +312,26 @@ data happy_raw_with_yoy_change;
         country $24.
     ;
     set happy_raw (rename =( Health__Life_Expectancy_=life_expectancy
-			     Economy__GDP_per_Capita_=gdp))
+                             Economy__GDP_per_Capita_=gdp))
     ;
     by 
-        country year
+        country 
+        year
     ;
     if 
         first.country  
     then
         do;
             hr = happiness_rank ;
-	    hs = happiness_score;
+	        hs = happiness_score;
         end;
     else 
         do;			
             happiness_rank_yoy =  hr - happiness_rank;
             happiness_score_yoy= (happiness_score /hs)-1;
             hr = happiness_rank ;
-	    hs = happiness_score;
-	    format 
+	        hs = happiness_score;
+	        format 
                 happiness_score_yoy percent15.2
             ;
             if 
@@ -302,50 +347,23 @@ run;
 *******************************************************************************;
 * Add Year column to eco_2016 and keep countries on happy			           ;
 *******************************************************************************;
-
-data eco_2016;
-	set eco_2016;
-	if country = 'Congo, Democratic Republ' then country = 'Congo (Kinshasa)';
-	if country = 'Congo'                    then country = 'Congo (Brazzaville)';
-	if country = 'Iran, Islamic Republic o' then country = 'Iran';
-	if country = "Lao People's Democratic"  then country = 'Laos';
-	if country = 'Macedonia TFYR'           then country = 'Macedonia';
-	if country = 'Korea, Republic of'       then country = 'South Korea';
-	if country = 'Korea, Democratic People' then country = 'North Korea';
-	if country = 'Syrian Arab Republic'     then country = 'Syria';
-	if country = 'Tanzania, United Republi' then country = 'Tanzania';
-	if country = 'United States of America' then country = 'United States';
-	if country = 'Venezuela, Bolivarian Re' then country = 'Venezuela';
-	if country = 'Viet Nam' 				then country = 'Vietnam';
-run;
-proc sort data = eco_2016 nodupkey; 
-    by country  
-    ; 
-run;
-
 data eco_2016;
     length 
         country $24.
     ;
-    merge 
-        happy_raw_with_yoy_change (in = a keep = country year where=(year=2016))
-        eco_2016 ( in = b rename = (population__millions_=population_mm))
+    set
+        eco_2016 (rename = (population__millions_=population_mm))
     ;
     by 
         country
     ; 
-    if 
-        a and b
+    year = 2016
     ;
-	
 run;
-
 
 *******************************************************************************;
 * Transpose data and keep 2016 year                                            ;
 *******************************************************************************;
-proc sort data = gpi_raw nodupkey; by country; run;
-
 data gpi_raw;
     set
         gpi_raw
@@ -358,68 +376,9 @@ data gpi_2016;
     set 
         gpi_raw (keep = country score_2016 gpi_yoy rename=(score_2016=gpi))
     ;
-    if country = 'Palestine' 
-        then country = 'Palestinian Territories'
-    ;
-    if country = 'Republic of the Congo' 
-        then country = 'Congo (Kinshasa)'
-    ;
     year = 2016
     ;
 run;
-
-proc sort data = gpi_2016 nodupkey; 
-    by 
-        country
-    ; 
-run;
-
-data gpi_2016;
-    retain 
-        country 
-        year 
-        gpi
-    ;
-    merge 
-        happy_raw_with_yoy_change (in = a keep = country year where=(year=2016))
-        gpi_2016 (in = b )
-    ;
-    by 
-        country
-    ;
-    if a and b
-    ;
-    drop 
-        _name_
-    ;
-run;
-
-*******************************************************************************;
-* Check raw dataset for duplicates with respect to primary key (country year)  ;
-*******************************************************************************;
-
-%macro duplicates(dsn );
-proc sort
-        nodupkey
-        data  =&dsn
-		dupout=&dsn._dup
-        out   =&dsn._sorted
-    ;
-    by 
-        country 
-        year
-    ;
-run;
-%mend;
-%duplicates(
-	happy_raw_with_yoy_change
-); 
-%duplicates(
-	gpi_2016
-);
-%duplicates(
-	eco_2016
-);
 
 *******************************************************************************;
 * Build analytic dataset with the least number of columns and
@@ -477,9 +436,9 @@ data cotw_2016_analytic_file;
     ;
 
     merge 
-        happy_raw_with_yoy_change_sorted  (in=a)
-        gpi_2016_sorted  (in=b)
-        eco_2016_sorted  (in=c)
+        happy_raw_with_yoy_change  (in=a)
+        gpi_2016  (in=b)
+        eco_2016  (in=c)
     ;
 	by 
         country 
@@ -489,17 +448,30 @@ data cotw_2016_analytic_file;
     ;
 run;
 
-
-* use proc sort to sort the analytic data file, making a new file named cotw_2016_analytic_file_sort_hr by descending happiness_rank_yoy;
-
+*******************************************************************************;
+* use proc sort to sort the analytic data file, making a new file named 
+  cotw_2016_analytic_file_sort_hr by descending happiness_rank_yoy;
+*******************************************************************************;
 proc sort 
     data=cotw_2016_analytic_file
     out=cotw_2016_analytic_file_sort_hr
     ;
-    by descending happiness_rank_yoy
+    by descending 
+        happiness_rank_yoy
     ;
 run;
 
-
+*******************************************************************************;
+* use proc sort to sort the analytic data file, making a new file named 
+  cotw_2016_analytic_file_sort_hs by descending happiness_score_yoy;
+*******************************************************************************;
+proc sort 
+    data=cotw_2016_analytic_file
+    out=cotw_2016_analytic_file_sort_hs
+    ;
+    by descending 
+       happiness_score_yoy
+    ;
+run;
 
 
