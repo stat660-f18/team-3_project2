@@ -3,7 +3,6 @@
 **************** 80-character banner for column width reference ***************;
 * (set window width to banner width to calibrate line length to 80 characters *;
 *******************************************************************************;
-
 *
 This file uses the following analytic dataset to address several research
 questions regarding country's happiness.
@@ -20,7 +19,6 @@ See included file for dataset properties
 * set relative file import path to current directory (using standard SAS trick);
 X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPATH))-%length(%sysget(SAS_EXECFILENAME))))""";
 
-
 * load external file that generates analytic datasets cde_2014_analytic_file,
   cde_2014_analytic_file_sort_frpm, and cde_2014_analytic_file_sort_sat;
 %include '.\STAT660-01_f18-team-3_project2_data_preparation.sas';
@@ -28,9 +26,8 @@ X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPA
 *******************************************************************************;
 * Research Question Analysis Starting Point;
 *******************************************************************************;
-
 title1
-'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in "Happiness Score"� between 2015 and 2016?'
+'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in "Happiness Score" between 2015 and 2016?'
 ;
 
 title2
@@ -50,7 +47,7 @@ footnote3
 ;
 *******************************************************************************;
 *
-Note: This compares the column "Happiness Score"� from happy_2015 to the 
+Note: This compares the column "Happiness Score" from happy_2015 to the 
 column of the same name from happy_2016.
 
 Methodology: When combining happy_2016 with happy_2015 during data 
@@ -79,15 +76,15 @@ proc print
         population_mm
         happiness_score_yoy 
     ;
-	format 
+    format 
         population_mm comma12.0
         happiness_score_yoy percent15.1
-	;
-
+    ;
 run;
  
 title;
 footnote;
+
 proc sgplot 
     data = cotw_2016_analytic_file_sort_hs 
     ;
@@ -97,19 +94,17 @@ proc sgplot
           datalabel 
           nostatlabel
     ;       
-	xaxis grid
-	;
+    xaxis grid
+    ;
     yaxis grid 
         discreteorder=data 
         label='20 Largest Countries'
     ;
 run;
 
-
 *******************************************************************************;
 * Research Question Analysis Starting Point;
 *******************************************************************************;
-
 title1
 'Research Question: Can "GPI" predict the "Happiness Score" in 2016?'
 ; 
@@ -146,14 +141,14 @@ statistical technique like linear regression.
 ;
 /*
 proc means 
-        min q1 median q3 max 
-        data=cotw_2016_analytic_file
+    min q1 median q3 max 
+    data=cotw_2016_analytic_file
     ;
     var 
         gpi 
         gpi_yoy   
-		happiness_score 
-		happiness_score_yoy
+        happiness_score 
+        happiness_score_yoy
     ;
 run;
 
@@ -173,7 +168,6 @@ proc freq
     ;
 run;
 */
-
 proc glm  
     data= cotw_2016_analytic_file 
     ;
@@ -187,11 +181,9 @@ quit;
 title;
 footnote;
 
-
 *******************************************************************************;
 * Research Question Analysis Starting Point                                    ;
 *******************************************************************************;
-
 title1
 'Research Question: Is there a strong correlation between "Life Expectancy" and "HDI (Human Development Index)"?'
 ;
@@ -206,9 +198,8 @@ footnote1
 
 *******************************************************************************;
 *
-Note: This compares the column “HDI” from eco_2016 to the column 
-"Life Expectancy" in happy_2016.
-    
+Note: This compares the column "HDI" from eco_2016 to the column 
+"Life Expectancy" in happy_2016. 
 *
 Methodology: Use PROC CORR can to compute Pearson product-moment correlation 
 coefficient between net_migration and deathrate, as well as Spearman's 
@@ -228,8 +219,9 @@ variable net_migration against death rate.
 
 proc corr 
     pearson spearman nomiss
-    data = cotw_2016_analytic_file ;
-	*plots= scatter (nvar=2 alpha=0.05) 
+    data = cotw_2016_analytic_file 
+    ;
+    *plots= scatter (nvar=2 alpha=0.05) 
     ;
     var 
         hdi
@@ -251,4 +243,14 @@ proc sgplot
     ;
     ellipse x = hdi  y = life_expectancy/type = predicted
     ; 
+quit;
+
+proc glm  
+    data = cotw_2016_analytic_file 
+    ;
+    model 
+        happiness_score = hdi life_expectancy
+        /solution
+    ;
+run ; 
 quit;
