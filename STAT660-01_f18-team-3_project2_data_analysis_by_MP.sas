@@ -27,7 +27,7 @@ X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPA
 * Research Question Analysis Starting Point;
 *******************************************************************************;
 title1
-'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in "Happiness Score"¬ù between 2015 and 2016?'
+'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in "Happiness Score"ù between 2015 and 2016?'
 ;
 
 title2
@@ -47,7 +47,7 @@ footnote3
 ;
 *******************************************************************************;
 *
-Note: This compares the column "Happiness Score"¬ù from happy_2015 to the 
+Note: This compares the column "Happiness Score"ù from happy_2015 to the 
 column of the same name from happy_2016.
 
 Methodology: When combining happy_2016 with happy_2015 during data 
@@ -75,11 +75,17 @@ proc print
     var 
         population_mm
         happiness_score_yoy 
+		life_expectancy
+	    hdi
+		gpi
     ;
     format 
         population_mm comma12.0
-        happiness_score_yoy percent15.1
-    ;
+        happiness_score_yoy 
+        life_expectancy percent15.1
+		hdi
+		gpi comma12.2
+	;
 run;
  
 title;
@@ -114,69 +120,98 @@ title2
 ;
 
 footnote1
-"As can be seen, there was an extremely high correlation between GPI and Happiness Score."
+'Applying simple linear regression model, it can be seen, that 22% of the variability in happiness score is can be explained by GPI. The lower the GPI the higher the Happiness Score.';
 ;
 
 footnote2
-"Given this apparent correlation based on descriptive methodology, further investigation should be performed using inferential methodology to determine the level of statistical significance of the result."
+'Since p-value <.0001 for GPI "Pr>|T|", we can conclude that GPI has significant linear effect on Happiness Score.'
 ;
 
 *
 Note: This compares the change in GPI between 2015 and 2016 in gpi_raw 
 dataset to the column "Happiness Score" in happy_2016 dataset.
 
-Methodology: Use proc means to compute 5-number summaries of "GPI YOY"
-and "Happiness Score YOY."  Then use proc format to create formats that 
-bin both columns with respect to the proc means output. Then use proc 
-freq to create a cross-tab of the two variables with respect to the 
-created formats.
+Methodology: Use proc glm to build simple linear regression y = b0 + b1x + e.
+First check to see if the Y-Happiness Score and X - GPI are highly
+correlated. If not continue to build model than check test model assumptions.
 
-Limitations: Even though predictive modeling is specified in the research
-questions, this methodology solely relies on a crude descriptive technique
-by looking at correlations along quartile values, which could be too coarse a
-method to find actual association between the variables.
+Model Assumptions 
+1) Dependent variable must be continuous
+2) IID Criterion that means the error terms, e, are:
+ a. independent from one another and
+ b. identically distributed
+ - Normally distributed residuals e (Residuals appear even band around 0)
+ - Error variance is the same for all observations
+3) Y observations are not correlated with each other
 
-Follow-up Steps: A possible follow-up to this approach could use an inferential
-statistical technique like linear regression.
+Goal: Find straight line that minimizes sum of squared distances from actual 
+weight to fitted line
+
+Limitations: Here we only looked at one variable to predict happiness score.
+Based on the results, there is negative linear effect on Happiness score. And
+only 22% can be explained by GPI.  
+
+Follow-up Steps: A possible follow-up is add additional X variables to improve
+model predictiveness.
 ;
+*******************************************************************************;
 /*
-proc means 
-    min q1 median q3 max 
-    data=cotw_2016_analytic_file
+Happiness Score = 7.648 + (-1.104)*GPI
+
+Model Assumptions 
+1) Dependent variable must be continuous
+2) IID Criterion that means the error terms, e, are:
+ a. independent from one another and
+ b. identically distributed
+ - Normally distributed residuals e (Residuals appear even band around 0)
+ - Error variance is the same for all observations
+3) Y observations are not correlated with each other
+Goal: Find straight line that minimizes sum of squared distances from actual 
+weight to fitted line
+
+Results:
+Type III SS p-value < 0.0001
+22% of the variability in happiness score is explained by GPI
+*/
+*******************************************************************************;
+/*
+proc corr 
+    pearson spearman nomiss
+    data = cotw_2016_analytic_file 
+	plots = scatter (nvar=2 alpha=0.05) 
     ;
     var 
-        gpi 
-        gpi_yoy   
-        happiness_score 
-        happiness_score_yoy
-    ;
-run;
-
-proc freq 
-    data=COTW_2016_analytic_file
-    ;
-    table 
-        gpi     * happiness_score
-        gpi_yoy * happiness_score_yoy 
-        / missing norow nocol nopercent 
-    ;
-    format 
-        gpi                 gpi_bins. 
-        gpi_yoy             gpi_yoy_bins. 
-        happiness_score     happiness_score_bins.
-        happiness_score_yoy happiness_score_yoy_bins.
+        happiness_score gpi
     ;
 run;
 */
-proc glm  
+*Results show -46.911% correlation. Thusly, not correlated can go to next step ;
+  
+proc glm   
     data= cotw_2016_analytic_file 
     ;
     model 
         happiness_score = gpi
-        /solution
+        /solution   
+    ;
+	output 
+        out=resids 
+        r  =res
     ;
 run; 
-quit;
+quit; 
+
+/* Test of Normality Assumption*/
+/*
+proc univariate 
+    data = resids normal plot
+    ;
+    var 
+       res
+	;
+run;
+*/
+/* Since Shapiro-Wilk 0.2089 >= 0.05, failed to reject Ho, residuals are normally distributed*/
 
 title;
 footnote;
@@ -193,7 +228,11 @@ title2
 ;
 
 footnote1
-'Pearson Chi-Sq Test shows p-value < 0.05, therefore reject Ho s.t. there is enough evidence to show significant correlation between "Life Expectancy" and "HDI (Human Development Index)".'
+'Life Expectancy and HDI (Human Development Index) have stastically significant linear relationship (r=0.91,p<0.0001).'
+;
+
+footnote2
+"The direction of the relationship is positive, meaning the greater the HDI the greater the Life Expectancy."
 ;
 
 *******************************************************************************;
@@ -202,27 +241,25 @@ Note: This compares the column "HDI" from eco_2016 to the column
 "Life Expectancy" in happy_2016. 
 *
 Methodology: Use PROC CORR can to compute Pearson product-moment correlation 
-coefficient between net_migration and deathrate, as well as Spearman's 
+coefficient between hdi and life_expectancy, as well as Spearman's 
 rank-order correlation, a nonparametric measures of association. PROC CORR 
 also computes simple descriptive statistics.  
+
 Limitations: Data dictionary is limited. The methodology does not account for 
 countries with missing data, nor does it attempt to validate data in any way, 
 like filtering for percentages between 0 and 1.
 
-Possible Follow-up Steps: More carefully clean the values of the variable
-net_migration so that the means computed do not include any possible
-illegal values. Find correlations for combinations death rate, infant 
-mortality, and net migration. And use proc plot to generate a graph of the 
-variable net_migration against death rate.
+Possible Follow-up Steps: More carefully clean the values of the variables
+so that the means computed do not include any possible illegal values. 
+And use proc plot to generate a graph of the variable hdi against 
+life expectancy.
 ;
 *******************************************************************************;
 
 proc corr 
-    pearson spearman nomiss
+    pearson spearman fisher(biasadj=no) nomiss 
     data = cotw_2016_analytic_file 
-    ;
-    *plots= scatter (nvar=2 alpha=0.05) 
-    ;
+    ; 
     var 
         hdi
         life_expectancy
@@ -243,14 +280,4 @@ proc sgplot
     ;
     ellipse x = hdi  y = life_expectancy/type = predicted
     ; 
-quit;
-
-proc glm  
-    data = cotw_2016_analytic_file 
-    ;
-    model 
-        happiness_score = hdi life_expectancy
-        /solution
-    ;
-run ; 
 quit;
