@@ -27,7 +27,7 @@ X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPA
 * Research Question Analysis Starting Point;
 *******************************************************************************;
 title1
-'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in "Happiness Score"ù between 2015 and 2016?'
+'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in "Happiness Score"¬ù between 2015 and 2016?'
 ;
 
 title2
@@ -47,7 +47,7 @@ footnote3
 ;
 *******************************************************************************;
 *
-Note: This compares the column "Happiness Score"ù from happy_2015 to the 
+Note: This compares the column "Happiness Score"¬ù from happy_2015 to the 
 column of the same name from happy_2016.
 
 Methodology: When combining happy_2016 with happy_2015 during data 
@@ -75,17 +75,17 @@ proc print
     var 
         population_mm
         happiness_score_yoy 
-		life_expectancy
-	    hdi
-		gpi
+        life_expectancy
+        hdi
+        gpi
     ;
     format 
         population_mm comma12.0
         happiness_score_yoy 
         life_expectancy percent15.1
-		hdi
-		gpi comma12.2
-	;
+        hdi
+        gpi comma12.2
+    ;
 run;
  
 title;
@@ -127,6 +127,7 @@ footnote2
 'Since p-value <.0001 for GPI "Pr>|T|", we can conclude that GPI has significant linear effect on Happiness Score.'
 ;
 
+*******************************************************************************;
 *
 Note: This compares the change in GPI between 2015 and 2016 in gpi_raw 
 dataset to the column "Happiness Score" in happy_2016 dataset.
@@ -134,15 +135,14 @@ dataset to the column "Happiness Score" in happy_2016 dataset.
 Methodology: Use proc glm to build simple linear regression y = b0 + b1x + e.
 First check to see if the Y-Happiness Score and X - GPI are highly
 correlated. If not continue to build model than check test model assumptions.
-
-Model Assumptions 
-1) Dependent variable must be continuous
-2) IID Criterion that means the error terms, e, are:
- a. independent from one another and
- b. identically distributed
- - Normally distributed residuals e (Residuals appear even band around 0)
- - Error variance is the same for all observations
-3) Y observations are not correlated with each other
+  Model Assumptions 
+  1) Dependent variable must be continuous
+  2) IID Criterion that means the error terms, e, are:
+   a. independent from one another and
+   b. identically distributed
+   - Normally distributed residuals e (Residuals appear even band around 0)
+   - Error variance is the same for all observations
+  3) Y observations are not correlated with each other
 
 Goal: Find straight line that minimizes sum of squared distances from actual 
 weight to fitted line
@@ -156,18 +156,8 @@ model predictiveness.
 ;
 *******************************************************************************;
 /*
+Model Results
 Happiness Score = 7.648 + (-1.104)*GPI
-
-Model Assumptions 
-1) Dependent variable must be continuous
-2) IID Criterion that means the error terms, e, are:
- a. independent from one another and
- b. identically distributed
- - Normally distributed residuals e (Residuals appear even band around 0)
- - Error variance is the same for all observations
-3) Y observations are not correlated with each other
-Goal: Find straight line that minimizes sum of squared distances from actual 
-weight to fitted line
 
 Results:
 Type III SS p-value < 0.0001
@@ -178,7 +168,7 @@ Type III SS p-value < 0.0001
 proc corr 
     pearson spearman nomiss
     data = cotw_2016_analytic_file 
-	plots = scatter (nvar=2 alpha=0.05) 
+    plots = scatter (nvar=2 alpha=0.05) 
     ;
     var 
         happiness_score gpi
@@ -194,7 +184,7 @@ proc glm
         happiness_score = gpi
         /solution   
     ;
-	output 
+    output 
         out=resids 
         r  =res
     ;
@@ -208,7 +198,7 @@ proc univariate
     ;
     var 
        res
-	;
+    ;
 run;
 */
 /* Since Shapiro-Wilk 0.2089 >= 0.05, failed to reject Ho, residuals are normally distributed*/
