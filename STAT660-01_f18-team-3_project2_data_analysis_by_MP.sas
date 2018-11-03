@@ -279,3 +279,20 @@ proc sgplot
     ellipse x = hdi  y = life_expectancy/type = predicted
     ; 
 quit;
+
+
+/*
+proc glm   
+    data= cotw_2016_analytic_file 
+    ;
+    model 
+        happiness_score = gpi hdi
+        /solution   
+    ;
+    output 
+        out=resids 
+        r  =res
+    ;
+run; 
+quit; 
+*/
