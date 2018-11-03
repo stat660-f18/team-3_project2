@@ -27,11 +27,11 @@ X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPA
 * Research Question Analysis Starting Point;
 *******************************************************************************;
 title1
-'Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in "Happiness Score" between 2015 and 2016?'
+"Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in Happiness Score between 2015 and 2016?"
 ;
 
 title2
-'Rationale: This will help identify countries that have decline in life satisfaction.'
+"Rationale: This will help identify countries that have decline in life satisfaction."
 ;
 
 footnote1
@@ -39,7 +39,7 @@ footnote1
 ;
 
 footnote2
-"Given the magnitude of these changes, further investigation should be performed to ensure no data errors are involved."
+"Nigeria had the largest decline in happiness score from 2015 to 2016.  This might be connected to Boko Haram kidnappings, Movement for Actualization of Biafra Repulic, and Niger Delta Avengers bombing pipelines in the country."
 ;
 
 footnote3
@@ -47,11 +47,11 @@ footnote3
 ;
 *******************************************************************************;
 *
-Note: This compares the column "Happiness Score" from happy_2015 to the 
+Note: This compares the column Happiness Score from happy_2015 to the 
 column of the same name from happy_2016.
 
 Methodology: When combining happy_2016 with happy_2015 during data 
-preparation, take the difference of values of "happiness_score" for each
+preparation, take the difference of values of happiness_score for each
 country and create a new variable called happiness_score_yoy. Then,
 use proc sort to create a temporary sorted table in descending by
 happiness_score_yoy. Finally, use proc print here to display the
@@ -120,11 +120,15 @@ title2
 ;
 
 footnote1
-'Applying simple linear regression model, it can be seen, that 22% of the variability in happiness score is can be explained by GPI. The lower the GPI the higher the Happiness Score.';
+'Applying simple linear regression model, it can be seen, that 22% of the variability in happiness score can be explained by GPI. The lower the GPI the higher the Happiness Score.';
 ;
 
 footnote2
 'Since p-value <.0001 for GPI "Pr>|T|", we can conclude that GPI has significant linear effect on Happiness Score.'
+;
+
+footnote3
+'A nation is considered more peaceful when the index score is lower.  The index is based on ongoing conflict, safety and security, and militarisation.'
 ;
 
 *******************************************************************************;
@@ -223,6 +227,10 @@ footnote1
 
 footnote2
 "The direction of the relationship is positive, meaning the greater the HDI the greater the Life Expectancy."
+;
+
+footnote3
+"We expect strong correlation since the human development index (HDI) is a composite statistic of life expectancy, education, and per capita income indicators."
 ;
 
 *******************************************************************************;
