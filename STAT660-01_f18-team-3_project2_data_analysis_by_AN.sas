@@ -5,7 +5,8 @@
 
 *
 This file uses the following analytic dataset to address several research
-questions regarding happiness, peace index and biocapacity / ecological-footprint 
+questions regarding happiness, peace index and biocapacity / 
+ecological-footprint
 Dataset Name: cotw_2016_analytic_file created in external file
 STAT660-01 f18-team-3 project2 data preparation.sas, which is assumed to be
 in the same directory as this file
@@ -19,7 +20,8 @@ See included file for dataset properties
 X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPATH))-%length(%sysget(SAS_EXECFILENAME))))""";
 
 
-* load external file that generates analytic datasets global_eco_2016 gpi_2008-2016 happy_2015 happy_2016;
+* load external file that generates analytic datasets global_eco_2016 
+gpi_2008-2016 happy_2015 happy_2016;
 %include 'STAT660-01 f18-team-3 project2 data preparation.sas';
 
 
@@ -52,11 +54,10 @@ Note:This compares the column “Happiness Rank” from happy_2015 to the column
 of the same name from happy_2016.
 
 Methodology: When combining happy_2015 with happy_2016 during data preparation,
-take the difference of values of "happiness_rank" for each
-school and create a new variable called happiness_rank_yoy . Then,
-use proc sort to create a temporary sorted table in descending by
-happiness_rank_yoy. Finally, use proc print here to display the
-first five rows of the sorted dataset.
+take the difference of values of "happiness_rank" for each school and create 
+a new variable called happiness_rank_yoy . Then, use proc sort to create a 
+temporary sorted table in descending by happiness_rank_yoy. Finally, use proc 
+print here to display the first five rows of the sorted dataset.
 
 Limitations: This methodology does not account for countries with missing data,
 nor does it attempt to validate data in any way, like filtering for percentages
@@ -114,30 +115,21 @@ Methodology:Use proc means to compute 5-number summaries of gpi
 and happiness_score. Then use proc format to create formats that bin both 
 columns with respect to the proc means output.
 
-Limitations: This methodology does not account for countries with missing data,
-nor does it attempt to validate data in any way, like filtering for percentages
-between 0 and 1.
+Limitations: This methodology does not account for countries with missing 
+data,nor does it attempt to validate data in any way, like filtering for 
+percentages between 0 and 1.
 
-Followup Steps: More carefully clean values in order to filter out any possible
-illegal values, and better handle missing data, e.g., by using a previous year's
-data or a rolling average of previous years' data as a proxy.
+Followup Steps: More carefully clean values in order to filter out any 
+possible illegal values, and better handle missing data, e.g., by using 
+a previous year's data or a rolling average of previous years' data as a proxy.
 ;
-
-/*proc means
-        min q1 median q3 max
-        data= cotw_2016_analytic_file
-    ;
-    var 
-        gpi
-		happiness_score
-    ;
-run;*/
 
 proc freq
         data=cotw_2016_analytic_file
     ;
     table
-        gpi*happiness_score
+             gpi
+            *happiness_score
     ;
         where
             not(missing(happiness_score))
