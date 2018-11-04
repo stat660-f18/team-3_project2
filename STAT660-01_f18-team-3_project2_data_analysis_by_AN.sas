@@ -173,7 +173,6 @@ footnote3
 Note: This compares the column biocapacity_deficit_or_reserve from eco_2016
 to the column happiness_score in happy_2016.
     
-*
 Methodology: Use PROC CORR can to compute Pearson product-moment correlation 
 coefficient between biocapacity_deficit_or_reserve and happiness_score, 
 as well as Spearman's rank-order correlation, a nonparametric measures of 
