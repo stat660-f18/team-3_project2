@@ -96,15 +96,15 @@ title2
 ;
 
 footnote1
-""
+"Contrary to traditional belief that high peace index should always go with high happiness score, from this result, it can be seen that there's some negative correlation between gpi and happiness score."
 ;
 
 footnote2
-""
+"A possible explaination is that While the variables used to determined GPI are more related to political issues, the variables used to measure happiness score are more related to life such as : economy, health, social support etc. A nation with high GPI doesnt necessarily achieve high quality healthcare or social support system. "
 ;
 
 footnote3
-""
+"Further investigation and other methods should be performed to examine the correlation of the 2 varibles as well as the level of statistical significance of the result."
 ; 
 
 *
@@ -130,6 +130,7 @@ proc freq
     table
              gpi
             *happiness_score
+			/ missing norow nocol nopercent
     ;
         where
             not(missing(happiness_score))
