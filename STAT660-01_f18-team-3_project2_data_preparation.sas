@@ -125,24 +125,23 @@ proc format;
     ;
     value $ country 
 	'Palestinian Territorie'   = 'Palestinian Territories'
-    'Somaliland region'        = 'Somalia'
-    'Taiwan Province of China' = 'Taiwan'
-    'Congo, Democratic Republ' = 'Congo (Kinshasa)'
-    'Congo'                    = 'Congo (Brazzaville)'
-    'Iran, Islamic Republic o' = 'Iran'
-    "Lao People's Democratic"  = 'Laos'
-    'Macedonia TFYR'           = 'Macedonia'
-    'Korea, Republic of'       = 'South Korea'
-    'Korea, Democratic People' = 'North Korea'
-    'Syrian Arab Republic'     = 'Syria'
-    'Tanzania, United Republi' = 'Tanzania' 
-    'United States of America' = 'United States'
-    'Venezuela, Bolivarian Re' = 'Venezuela'
-    'Viet Nam' 				   = 'Vietnam' 
-    'Palestine'                = 'Palestinian Territories'
+        'Somaliland region'        = 'Somalia'
+        'Taiwan Province of China' = 'Taiwan'
+        'Congo, Democratic Republ' = 'Congo (Kinshasa)'
+        'Congo'                    = 'Congo (Brazzaville)'
+        'Iran, Islamic Republic o' = 'Iran'
+        "Lao People's Democratic"  = 'Laos'
+        'Macedonia TFYR'           = 'Macedonia'
+        'Korea, Republic of'       = 'South Korea'
+        'Korea, Democratic People' = 'North Korea'
+        'Syrian Arab Republic'     = 'Syria'
+        'Tanzania, United Republi' = 'Tanzania' 
+        'United States of America' = 'United States'
+        'Venezuela, Bolivarian Re' = 'Venezuela'
+        'Viet Nam' 		   = 'Vietnam' 
+        'Palestine'                = 'Palestinian Territories'
 	'Republic of the Congo'    = 'Congo (Kinshasa)'  
     ;
-
 run;
 
 * setup environmental parameters;
@@ -201,8 +200,8 @@ run;
                 set 
                     &dsn
 		;
-		    country=put(country,country.)
-			;
+		country=put(country,country.)
+		;
             run;
 
 ***************************************************************************;
