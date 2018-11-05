@@ -7,9 +7,10 @@
 This file uses the following analytic dataset to address several research
 questions regarding country's happiness.
 
-Dataset Name: cotw_2016_analytic_file created in external file
+Dataset Name: cotw_2016_analytic_file, cotw_2016_analytic_file_sort_hs, 
+and cotw_2016_analytic_file_sort_hr were created in external file
 STAT660-01_f18-team-3_project2_data_preparation.sas, which is assumed to be
-in the same directory as this file
+in the same directory as this file.
 
 See included file for dataset properties
 */
@@ -19,12 +20,12 @@ See included file for dataset properties
 * set relative file import path to current directory (using standard SAS trick);
 X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPATH))-%length(%sysget(SAS_EXECFILENAME))))""";
 
-* load external file that generates analytic datasets cde_2014_analytic_file,
-  cde_2014_analytic_file_sort_frpm, and cde_2014_analytic_file_sort_sat;
+* load external file that generates analytic datasets cotw_2016_analytic_file,
+  cotw_2016_analytic_file_sort_hs , and cotw_2016_analytic_file_sort_hr ;
 %include '.\STAT660-01_f18-team-3_project2_data_preparation.sas';
 
 *******************************************************************************;
-* Research Question Analysis Starting Point;
+* Research Question Analysis Starting Point                                    ;
 *******************************************************************************;
 title1
 "Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in Happiness Score between 2015 and 2016?"
@@ -110,7 +111,7 @@ proc sgplot
 run;
 
 *******************************************************************************;
-* Research Question Analysis Starting Point;
+* Research Question Analysis Starting Point                                    ;
 *******************************************************************************;
 title1
 'Research Question: Can "GPI" predict the "Happiness Score" in 2016?'
@@ -149,6 +150,15 @@ correlated. If not continue to build model than check test model assumptions.
    - Error variance is the same for all observations
   3) Y observations are not correlated with each other
 
+    Model Results
+    Happiness Score = 7.648 + (-1.104)*GPI
+    Type III SS p-value < 0.0001
+    22% of the variability in happiness score is explained by GPI
+
+    Correlation shows show -46.911% correlation. Thusly, not correlated can go 
+    to next step. Test for Residual normality, shows Shapiro-Wilk 0.2089>=0.05, 
+    failed to reject Ho, residuals are normally distributed.
+
 Goal: Find straight line that minimizes sum of squared distances from actual 
 weight to fitted line
 
@@ -159,20 +169,6 @@ only 22% can be explained by GPI.
 Follow-up Steps: A possible follow-up is add additional X variables to improve
 model predictiveness.
 */
-*******************************************************************************;
-/*
-Model Results
-Happiness Score = 7.648 + (-1.104)*GPI
-
-Results:
-Type III SS p-value < 0.0001
-22% of the variability in happiness score is explained by GPI
-
-Correlation shows show -46.911% correlation. Thusly, not correlated can go 
-to next step. Test for Residual normality, shows Shapiro-Wilk 0.2089 >= 0.05, 
-failed to reject Ho, residuals are normally distributed.
-*/
-*******************************************************************************;
  
 proc glm   
     data= cotw_2016_analytic_file 
