@@ -130,7 +130,7 @@ proc freq
     table
              gpi
             *happiness_score
-	    / missing norow nocol nopercent
+	     / missing norow nocol nopercent
     ;
         where
             not(missing(happiness_score))
