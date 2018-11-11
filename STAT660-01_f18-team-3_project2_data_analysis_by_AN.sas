@@ -189,7 +189,7 @@ proc corr
     ;
     var 
         biocapacity_deficit_or_reserve
-	happiness_score
+	 happiness_score
     ;
 run;
 
