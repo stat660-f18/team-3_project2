@@ -122,7 +122,26 @@ proc format;
        -0.014<- 0.000="Q2 Happiness Score %"
         0.000<- 0.021="Q3 Happiness Score %"
         0.021<- high ="Q4 Happiness Score %"
-    ; 
+    ;
+    value $ country 
+	'Palestinian Territorie'   = 'Palestinian Territories'
+	'Somaliland region'        = 'Somalia'
+	'Taiwan Province of China' = 'Taiwan'
+	'Congo, Democratic Republ' = 'Congo (Kinshasa)'
+	'Congo'                    = 'Congo (Brazzaville)'
+	'Iran, Islamic Republic o' = 'Iran'
+	"Lao People's Democratic"  = 'Laos'
+	'Macedonia TFYR'           = 'Macedonia'
+	'Korea, Republic of'       = 'South Korea'
+	'Korea, Democratic People' = 'North Korea'
+	'Syrian Arab Republic'     = 'Syria'
+	'Tanzania, United Republi' = 'Tanzania' 
+	'United States of America' = 'United States'
+	'Venezuela, Bolivarian Re' = 'Venezuela'
+	'Viet Nam' 		   = 'Vietnam' 
+	'Palestine'                = 'Palestinian Territories'
+	'Republic of the Congo'    = 'Congo (Kinshasa)'  
+    ;
 run;
 
 * setup environmental parameters;
@@ -181,56 +200,7 @@ run;
                 set 
                     &dsn
 		;
-                if country = 'Palestinian Territorie'   
-                    then country = 'Palestinian Territories'
-		;
-                if country = 'Somaliland region'        
-                    then country = 'Somalia'
-		; 
-                if country = 'Taiwan Province of China' 
-                    then country = 'Taiwan'
-		;
-                if country = 'Congo, Democratic Republ' 
-                    then country = 'Congo (Kinshasa)'
-		;
-                if country = 'Congo'                    
-                    then country = 'Congo (Brazzaville)'
-		;
-                if country = 'Iran, Islamic Republic o' 
-                    then country = 'Iran'
-		;
-                if country = "Lao People's Democratic"  
-                    then country = 'Laos'
-		;
-                if country = 'Macedonia TFYR'           
-                    then country = 'Macedonia'
-		;
-                if country = 'Korea, Republic of'       
-                    then country = 'South Korea'
-		;
-                if country = 'Korea, Democratic People' 
-                    then country = 'North Korea'
-		;
-                if country = 'Syrian Arab Republic'     
-                    then country = 'Syria'
-		;
-                if country = 'Tanzania, United Republi' 
-                    then country = 'Tanzania'
-		;
-                if country = 'United States of America' 
-                    then country = 'United States'
-		;
-                if country = 'Venezuela, Bolivarian Re' 
-                    then country = 'Venezuela'
-		;
-                if country = 'Viet Nam' 				
-                    then country = 'Vietnam'
-		;	
-                if country = 'Palestine'                
-                    then country = 'Palestinian Territories'
-		;
-                if country = 'Republic of the Congo'    
-                    then country = 'Congo (Kinshasa)'  
+		country=put(country,country.)
 		;
             run;
 
@@ -480,8 +450,9 @@ run;
   cotw_2016_analytic_file_sort_hs by descending happiness_score_yoy  
   for largest 20 countries                                                     ;
 *******************************************************************************;
-proc sort nodupkey 
+proc sort 
     data = cotw_2016_analytic_file 
+    out  = cotw_2016_analytic_file_sort_hs
     ; 
     by descending 
         population_mm
@@ -490,7 +461,7 @@ run;
 
 data cotw_2016_analytic_file_sort_hs;
     set 
-        cotw_2016_analytic_file
+        cotw_2016_analytic_file_sort_hs
     ;
     if _n_<=20
     ;

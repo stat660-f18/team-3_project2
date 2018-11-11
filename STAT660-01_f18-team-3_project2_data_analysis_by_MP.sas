@@ -3,28 +3,29 @@
 **************** 80-character banner for column width reference ***************;
 * (set window width to banner width to calibrate line length to 80 characters *;
 *******************************************************************************;
-*
+/*
 This file uses the following analytic dataset to address several research
 questions regarding country's happiness.
 
-Dataset Name: cotw_2016_analytic_file created in external file
+Dataset Name: cotw_2016_analytic_file, cotw_2016_analytic_file_sort_hs, 
+and cotw_2016_analytic_file_sort_hr were created in external file
 STAT660-01_f18-team-3_project2_data_preparation.sas, which is assumed to be
-in the same directory as this file
+in the same directory as this file.
 
 See included file for dataset properties
-;
+*/
 
 * environmental setup;
 
 * set relative file import path to current directory (using standard SAS trick);
 X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPATH))-%length(%sysget(SAS_EXECFILENAME))))""";
 
-* load external file that generates analytic datasets cde_2014_analytic_file,
-  cde_2014_analytic_file_sort_frpm, and cde_2014_analytic_file_sort_sat;
+* load external file that generates analytic datasets cotw_2016_analytic_file,
+  cotw_2016_analytic_file_sort_hs , and cotw_2016_analytic_file_sort_hr ;
 %include '.\STAT660-01_f18-team-3_project2_data_preparation.sas';
 
 *******************************************************************************;
-* Research Question Analysis Starting Point;
+* Research Question Analysis Starting Point                                    ;
 *******************************************************************************;
 title1
 "Research Question:  For the 20 largest countries, what are the top five countries that experienced the biggest decrease in Happiness Score between 2015 and 2016?"
@@ -46,7 +47,7 @@ footnote3
 "However, assuming there are no data issues underlying this analysis, possible explanations for such volatilities is due to the small population size. Note China has 1.4B people while U.S. has 320MM people."
 ;
 *******************************************************************************;
-*
+/*
 Note: This compares the column Happiness Score from happy_2015 to the 
 column of the same name from happy_2016.
 
@@ -61,10 +62,11 @@ Limitations: This methodology does not account for country's with missing data,
 nor does it attempt to validate data in any way, like filtering for percentages
 between 0 and 1.
 
-Follow-up Steps: More carefully clean values in order to filter out any possible
-illegal values, and better handle missing data, e.g., by using a previous 
-year's data or a rolling average of previous years' data as a proxy.
-; 
+Follow-up Steps: More carefully clean values in order to filter out any 
+possible illegal values, and better handle missing data, e.g., by using a 
+previous year's data or a rolling average of previous years' data as a proxy.
+*/
+*******************************************************************************;
 proc print 
     noobs label
     data = cotw_2016_analytic_file_sort_hs  (obs=5) 
@@ -109,7 +111,7 @@ proc sgplot
 run;
 
 *******************************************************************************;
-* Research Question Analysis Starting Point;
+* Research Question Analysis Starting Point                                    ;
 *******************************************************************************;
 title1
 'Research Question: Can "GPI" predict the "Happiness Score" in 2016?'
@@ -132,7 +134,7 @@ footnote3
 ;
 
 *******************************************************************************;
-*
+/*
 Note: This compares the change in GPI between 2015 and 2016 in gpi_raw 
 dataset to the column "Happiness Score" in happy_2016 dataset.
 
@@ -148,6 +150,15 @@ correlated. If not continue to build model than check test model assumptions.
    - Error variance is the same for all observations
   3) Y observations are not correlated with each other
 
+    Model Results
+    Happiness Score = 7.648 + (-1.104)*GPI
+    Type III SS p-value < 0.0001
+    22% of the variability in happiness score is explained by GPI
+
+    Correlation shows show -46.911% correlation. Thusly, not correlated can go 
+    to next step. Test for Residual normality, shows Shapiro-Wilk 0.2089>=0.05, 
+    failed to reject Ho, residuals are normally distributed.
+
 Goal: Find straight line that minimizes sum of squared distances from actual 
 weight to fitted line
 
@@ -157,30 +168,8 @@ only 22% can be explained by GPI.
 
 Follow-up Steps: A possible follow-up is add additional X variables to improve
 model predictiveness.
-;
-*******************************************************************************;
-/*
-Model Results
-Happiness Score = 7.648 + (-1.104)*GPI
-
-Results:
-Type III SS p-value < 0.0001
-22% of the variability in happiness score is explained by GPI
 */
-*******************************************************************************;
-/*
-proc corr 
-    pearson spearman nomiss
-    data = cotw_2016_analytic_file 
-    plots = scatter (nvar=2 alpha=0.05) 
-    ;
-    var 
-        happiness_score gpi
-    ;
-run;
-*/
-*Results show -46.911% correlation. Thusly, not correlated can go to next step ;
-  
+ 
 proc glm   
     data= cotw_2016_analytic_file 
     ;
@@ -194,18 +183,6 @@ proc glm
     ;
 run; 
 quit; 
-
-/* Test of Normality Assumption*/
-/*
-proc univariate 
-    data = resids normal plot
-    ;
-    var 
-       res
-    ;
-run;
-*/
-/* Since Shapiro-Wilk 0.2089 >= 0.05, failed to reject Ho, residuals are normally distributed*/
 
 title;
 footnote;
@@ -234,10 +211,10 @@ footnote3
 ;
 
 *******************************************************************************;
-*
+/*
 Note: This compares the column "HDI" from eco_2016 to the column 
 "Life Expectancy" in happy_2016. 
-*
+
 Methodology: Use PROC CORR can to compute Pearson product-moment correlation 
 coefficient between hdi and life_expectancy, as well as Spearman's 
 rank-order correlation, a nonparametric measures of association. PROC CORR 
@@ -251,7 +228,7 @@ Possible Follow-up Steps: More carefully clean the values of the variables
 so that the means computed do not include any possible illegal values. 
 And use proc plot to generate a graph of the variable hdi against 
 life expectancy.
-;
+*/
 *******************************************************************************;
 
 proc corr 
@@ -280,19 +257,3 @@ proc sgplot
     ; 
 quit;
 
-
-/*
-proc glm   
-    data= cotw_2016_analytic_file 
-    ;
-    model 
-        happiness_score = gpi hdi
-        /solution   
-    ;
-    output 
-        out=resids 
-        r  =res
-    ;
-run; 
-quit; 
-*/

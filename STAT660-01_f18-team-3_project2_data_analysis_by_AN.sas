@@ -5,8 +5,8 @@
 
 *
 This file uses the following analytic dataset to address several research
-questions regarding happiness, peace index and biocapacity / 
-ecological-footprint
+questions regarding happiness,peace index and biocapacity,ecological-footprint
+
 Dataset Name: cotw_2016_analytic_file created in external file
 STAT660-01 f18-team-3 project2 data preparation.sas, which is assumed to be
 in the same directory as this file
@@ -50,12 +50,12 @@ footnote3
 ;
 
 *
-Note:This compares the column “Happiness Rank” from happy_2015 to the column 
+Note:This compares the column â€œHappiness Rankâ€ from happy_2015 to the column 
 of the same name from happy_2016.
 
 Methodology: When combining happy_2015 with happy_2016 during data preparation,
 take the difference of values of "happiness_rank" for each school and create 
-a new variable called happiness_rank_yoy . Then, use proc sort to create a 
+a new variable called happiness_rank_yoy. Then, use proc sort to create a 
 temporary sorted table in descending by happiness_rank_yoy. Finally, use proc 
 print here to display the first five rows of the sorted dataset.
 
@@ -88,11 +88,11 @@ footnote;
 *******************************************************************************;
 
 title1
-"Research Question: Is "GPI" in a relationship with "Happiness Score" ?  "
+'Research Question: Is "GPI" in a relationship with "Happiness Score" ?'
 ;
 
 title2
-"Rationale: This will help determine if peace status of a country makes people happier"
+'Rationale: This will help determine if peace status of a country makes people happier'
 ;
 
 footnote1
@@ -108,7 +108,7 @@ footnote3
 ; 
 
 *
-Note:This compares the column “gpi” from gpi_2008-2016 to the column 
+Note:This compares the column â€œgpiâ€ from gpi_2008-2016 to the column 
 happiness_score from happy_2016.
 
 Methodology:Use proc means to compute 5-number summaries of gpi 
@@ -130,7 +130,7 @@ proc freq
     table
              gpi
             *happiness_score
-			/ missing norow nocol nopercent
+	     / missing norow nocol nopercent
     ;
         where
             not(missing(happiness_score))
@@ -150,11 +150,11 @@ footnote;
 *******************************************************************************;
 
 title1
-'Is there a correlation between “Biocapacity Deficit or Reserve” and “Happiness Score”? '
+'Is there a correlation between â€œBiocapacity Deficit or Reserveâ€ and â€œHappiness Scoreâ€? '
 ;
 
 title2
-"Rationale: Rationale: Biocapacity Deficit or Reserve reveals the sustainability status of a country, which can lead to a happier fulfilled life"
+'Rationale:Biocapacity Deficit or Reserve reveals the sustainability status of a country, which can lead to a happier fulfilled life'
 ;
 
 footnote1
@@ -162,11 +162,7 @@ footnote1
 ;
 
 footnote2
-"However, Pearson Chi-Sq Test shows p-value > 0.05, therefore there is not enough evidence to show the correlation between “Biocapacity Deficit or Reserve” and “Happiness Score”"
-;
-
-footnote3
-""
+"However, Pearson Chi-Sq Test shows p-value > 0.05, therefore there is not enough evidence to show the correlation between â€œBiocapacity Deficit or Reserveâ€ and â€œHappiness Scoreâ€"
 ;
 
 *
@@ -193,9 +189,9 @@ proc corr
     ;
     var 
         biocapacity_deficit_or_reserve
-		happiness_score
+	 happiness_score
     ;
 run;
+
 title;
 footnote;
-
