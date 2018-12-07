@@ -162,7 +162,7 @@ footnote1
 ;
 
 footnote2
-"It means greater happiness scores happen to countries with greater deficit or greater reserve "
+"It means greater happiness scores happen to countries with greater deficit or greater reserve. "
 ;
 
 footnote3
@@ -197,6 +197,10 @@ proc sgplot
     ; 
 quit;
 
+title;
+footnote;
+
+
 data bio_deficit bio_reserve;
     set COTW_2016_analytic_file
     ;
@@ -215,8 +219,7 @@ proc corr
 	    happiness_score
     ;
 run;
-title;
-footnote;
+
 proc corr 
         pearson spearman
         data = bio_reserve (rename = (biocapacity_deficit_or_reserve = bio_reserve))
@@ -226,3 +229,4 @@ proc corr
 	    happiness_score
     ;
 run;
+
