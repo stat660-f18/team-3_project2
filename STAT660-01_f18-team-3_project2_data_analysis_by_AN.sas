@@ -22,7 +22,7 @@ X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPA
 
 * load external file that generates analytic datasets global_eco_2016 
 gpi_2008-2016 happy_2015 happy_2016;
-%include 'STAT660-01 f18-team-3 project2 data preparation.sas';
+%include 'STAT660-01_f18-team-3_project2_data_preparation.sas';
 
 
 *******************************************************************************;

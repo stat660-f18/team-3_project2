@@ -341,7 +341,7 @@ data eco_2016;
         country $24.
     ;
     set
-        eco_2016 (rename = (population__millions_=population_mm))
+        eco_2016 (rename = (Population__millions_= population_mm))
     ;
     by 
         country
