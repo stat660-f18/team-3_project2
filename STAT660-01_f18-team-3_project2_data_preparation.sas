@@ -197,10 +197,16 @@ run;
   in order to merge the other two datasets ;
 *******************************************************************************;
             data &dsn;
-                set 
-                    &dsn
+		length country $24.
 		;
-		country=put(country,country.)
+                set 
+                    &dsn (rename = country=old_country)
+		;
+		country= old_country
+		;
+		country=put(old_country,country.)
+		;
+		drop old_country
 		;
             run;
 
