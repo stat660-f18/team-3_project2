@@ -150,30 +150,37 @@ footnote;
 *******************************************************************************;
 
 title1
-'Is there a correlation between “Biocapacity Deficit or Reserve” and “Happiness Score”? '
+'Is there a correlation between Biocapacity Deficit or Reserve� and Happiness Score? '
 ;
 
 title2
-'Rationale:Biocapacity Deficit or Reserve reveals the sustainability status of a country, which can lead to a happier fulfilled life'
+'Rationale: Biocapacity Deficit or Reserve reveals the sustainability status of a country, which can lead to a happier fulfilled life'
 ;
 
 footnote1
-"The result shows a negative relation between the 2 variables "
+"Biocapacity deficit and happiness score have negative significant linear relationship (p<0.0001) while Biocapacity reserve and happiness score has positive linear relationship (p<0.05)"
 ;
 
 footnote2
-"However, Pearson Chi-Sq Test shows p-value > 0.05, therefore there is not enough evidence to show the correlation between “Biocapacity Deficit or Reserve” and “Happiness Score”"
+"It means greater happiness scores happen to countries with greater deficit or greater reserve "
+;
+
+footnote3
+"This is an interesting finding."
 ;
 
 *
 Note: This compares the column biocapacity_deficit_or_reserve from eco_2016
 to the column happiness_score in happy_2016.
     
-Methodology: Use PROC CORR can to compute Pearson product-moment correlation 
-coefficient between biocapacity_deficit_or_reserve and happiness_score, 
-as well as Spearman's rank-order correlation, a nonparametric measures of 
-association. PROC CORR also computes simple descriptive statistics.  
-
+Methodology: - Explore the relationship of the 2 variables by scatterplot.
+             - Split the dataset into 2 parts : bio_deficit and bio_reserve 
+             - Use PROC CORR can to compute Pearson product-moment 
+correlation coefficient between biocapacity_deficit_or_reserve and 
+happiness_score, as well as Spearman's rank-order correlation, a 
+nonparametric measures of association. PROC CORR also computes simple 
+descriptive statistics.  
+ 
 Limitations: This methodology does not account for countries with missing data,
 nor does it attempt to validate data in any way, like filtering for values
 outside of admissable values.
@@ -183,15 +190,39 @@ statistics computed do not include any possible illegal values, and better
 handle missing data, e.g.,.
 ;
 
-proc corr 
-        pearson spearman
-        data = cotw_2016_analytic_file 
+proc sgplot
+    data = COTW_2016_analytic_file
+    ; 
+    scatter x = biocapacity_deficit_or_reserve y = happiness_score
+    ; 
+quit;
+
+data bio_deficit bio_reserve;
+    set COTW_2016_analytic_file
     ;
-    var 
-        biocapacity_deficit_or_reserve
-	 happiness_score
+    if biocapacity_deficit_or_reserve < 0 then output bio_deficit  
+    ;
+	else output bio_reserve
     ;
 run;
 
+proc corr 
+        pearson spearman
+        data = bio_deficit (rename = (biocapacity_deficit_or_reserve = bio_deficit))
+    ;
+    var 
+        bio_deficit
+	    happiness_score
+    ;
+run;
 title;
 footnote;
+proc corr 
+        pearson spearman
+        data = bio_reserve (rename = (biocapacity_deficit_or_reserve = bio_reserve))
+    ;
+    var 
+        bio_reserve
+	    happiness_score
+    ;
+run;
