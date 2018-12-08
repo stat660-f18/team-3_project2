@@ -150,7 +150,7 @@ footnote;
 *******************************************************************************;
 
 title1
-'Is there a correlation between Biocapacity Deficit or Reserveù and Happiness Score? '
+'Research Question: Is there a correlation between Biocapacity Deficit or Reserveù and Happiness Score? '
 ;
 
 title2
